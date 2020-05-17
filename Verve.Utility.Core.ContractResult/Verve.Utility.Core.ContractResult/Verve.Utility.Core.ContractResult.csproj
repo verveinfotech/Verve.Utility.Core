@@ -4,6 +4,13 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
+    <Authors>Verve IT</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0.1</Version>
+    <IsPackable>true</IsPackable>
+    <RepositoryType>Public</RepositoryType>
+    <PackageTags>ContractResult</PackageTags>
+    <NeutralLanguage />
   </PropertyGroup>
 
   <ItemGroup>
