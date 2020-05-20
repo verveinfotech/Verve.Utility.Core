@@ -61,7 +61,7 @@ namespace Verve.Utility.Core.ContractResult
 
         [UsedImplicitly]
         [JetBrains.Annotations.NotNull]
-        public virtual Result Success(TEntity entity)
+        public new static Result Success(TEntity entity)
         {
             return new Result<TEntity>(true, entity, ReasonCode.Success);
         }
