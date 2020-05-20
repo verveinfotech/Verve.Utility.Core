@@ -33,21 +33,34 @@ namespace Verve.Utility.Core.ContractResult
         public bool Failed => !Succeeded;
 
         public static Result Success => new Result { Succeeded = true, ReasonCode = ReasonCode.Success};
-        
-        public static Result Failure(string errorMessage, Exception exception)
-        {
-            return Failure(errorMessage, ReasonCode.UnknownError, exception);
-        }
 
-        public static Result Failure(string errorMessage, ReasonCode reasonCode, Exception exception)
+        public static Result Failure(Exception exception)
+            => Failure(exception.Message, exception.StackTrace?? exception.Message, ReasonCode.InternalServerError);
+
+        public static Result Failure(string errorMessage) 
+            =>  Failure(errorMessage, ReasonCode.UnknownError, null);
+
+        public static Result Failure(string errorMessage, ReasonCode reasonCode)
+            => Failure(errorMessage, reasonCode, null);
+        
+
+        public static Result Failure(string errorMessage, ReasonCode reasonCode, Exception? exception)
+            => Failure(errorMessage, errorMessage, reasonCode, exception);
+        
+        public static Result Failure(string errorMessage, string detailErrorMessage, ReasonCode reasonCode, Exception? exception)
         {
             return new Result
             {
                 ErrorMessage = errorMessage,
                 ReasonCode = reasonCode,
-                Exception = exception
+                Exception = exception,
+                DetailErrorMessage = detailErrorMessage
             };
         }
-
+        
+        public static Result Failure(string errorMessage, string detailError, ReasonCode reasonCode)
+        {
+            return Failure(errorMessage, reasonCode, null);
+        }
     }
 }
