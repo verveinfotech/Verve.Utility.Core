@@ -61,12 +61,12 @@ namespace Verve.Utility.Core.ContractResult
 
         [UsedImplicitly]
         [JetBrains.Annotations.NotNull]
-        public new static Result Success(TEntity entity)
+        public new static Result<TEntity> Success(TEntity entity)
         {
             return new Result<TEntity>(true, entity, ReasonCode.Success);
         }
 
-        public Result From(Result other)
+        public Result<TEntity> From(Result other)
         {
             if (other == null)
             {

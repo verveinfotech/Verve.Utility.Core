@@ -4,13 +4,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
-    <Authors>Verve Infotech</Authors>
+    <Authors>Verve Infotech, Aziz Kapadia</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>1.0.0.1</Version>
     <IsPackable>true</IsPackable>
     <RepositoryType>Public</RepositoryType>
     <PackageTags>ContractResult</PackageTags>
     <NeutralLanguage />
+    <RepositoryUrl>https://github.com/verveinfotech/Verve.Utility.Core</RepositoryUrl>
+    <Description>This repository contains result classes to return success and failure messages to calling code.</Description>
   </PropertyGroup>
 
   <ItemGroup>
