@@ -62,10 +62,13 @@ namespace Verve.Utility.Core.ContractResult
         [UsedImplicitly]
         [JetBrains.Annotations.NotNull]
         public new static Result<TEntity> Success(TEntity entity)
-        {
-            return new Result<TEntity>(true, entity, ReasonCode.Success);
-        }
+            => Success(entity, ReasonCode.Success);
 
+        [UsedImplicitly]
+        [JetBrains.Annotations.NotNull]
+        public new static Result<TEntity> Success(TEntity entity, ReasonCode reasonCode)
+            => new Result<TEntity>(true, entity, reasonCode);
+        
         public Result<TEntity> From(Result other)
         {
             if (other == null)
@@ -89,7 +92,7 @@ namespace Verve.Utility.Core.ContractResult
                 }
             }
 
-            return new Result<TEntity>(other.Succeeded, other.ReasonCode, other.ErrorMessage, other.ErrorMessage, otherContent);
+            return new Result<TEntity>(other.Succeeded, other.ReasonCode, other.ErrorMessage, other.DetailErrorMessage, otherContent);
         }
 
         /// <summary>
