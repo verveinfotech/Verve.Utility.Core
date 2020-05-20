@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Verve.Utility.Core.ContractResult
 {
@@ -12,7 +13,10 @@ namespace Verve.Utility.Core.ContractResult
         {
             return new ContentResult
             {
-                Content = JsonConvert.SerializeObject(result),
+                Content = JsonConvert.SerializeObject(result, new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                }),
                 ContentType = "application/json",
                 StatusCode = GetStatusCode(result)
             };
