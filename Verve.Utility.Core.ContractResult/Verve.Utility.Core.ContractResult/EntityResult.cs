@@ -69,7 +69,7 @@ namespace Verve.Utility.Core.ContractResult
         public new static Result<TEntity> Success(TEntity entity, ReasonCode reasonCode)
             => new Result<TEntity>(true, entity, reasonCode);
 
-        public Result<TEntity> From(Result other)
+        public static Result<TEntity> From(Result other)
         {
             if (other == null)
             {
