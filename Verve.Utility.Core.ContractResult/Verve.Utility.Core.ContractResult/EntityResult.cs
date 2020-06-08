@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace Verve.Utility.Core.ContractResult
@@ -124,14 +125,14 @@ namespace Verve.Utility.Core.ContractResult
         }
 
         [UsedImplicitly]
-        public static Result<TEntity> FailedIfOtherFailed( Result other, Func<Result<TEntity>> func )
+        public async Task<Result<TEntity>> FailedIfOtherFailed( Result other, Func<Task<Result<TEntity>>> func )
         {
             if (other.Failed)
             {
                 return FailedFromOtherFailed(other);
             }
 
-            return func.Invoke();
+            return await func.Invoke();
         }
 
         private TEntity _entity;
