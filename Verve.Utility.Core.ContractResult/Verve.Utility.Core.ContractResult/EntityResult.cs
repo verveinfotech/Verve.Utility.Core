@@ -5,9 +5,7 @@ using JetBrains.Annotations;
 namespace Verve.Utility.Core.ContractResult
 {
     public class Result<TEntity> : Result
-        where TEntity : class, new()
     {
-
         /// <summary>
         /// 
         /// </summary>
@@ -35,7 +33,7 @@ namespace Verve.Utility.Core.ContractResult
                     $"'{nameof( ReasonCode.Accepted )}', '{nameof( ReasonCode.NoContent )}', '{nameof( ReasonCode.Success )}'." );
             }
 
-            _tEntity = entity;
+            _entity = entity!;
         }
 
         /// <summary>
@@ -48,14 +46,14 @@ namespace Verve.Utility.Core.ContractResult
         /// <param name="entity"></param>
         [UsedImplicitly]
         public Result( bool success, ReasonCode reason, string? userFriendlyMessage, string? developerFriendlyMessage )
-            : this( success, reason, userFriendlyMessage, developerFriendlyMessage, default( TEntity ) )
+            : this( success, reason, userFriendlyMessage, developerFriendlyMessage, default! )
         {
         }
 
         public Result( bool success, TEntity entity, ReasonCode reasonCode )
         {
             Succeeded = success;
-            Entity = entity;
+            _entity = entity;
             ReasonCode = reasonCode;
         }
 
@@ -88,7 +86,6 @@ namespace Verve.Utility.Core.ContractResult
         public new static Result<TEntity> Failure( string errorMessage, string detailError, ReasonCode reasonCode )
             => Failure( errorMessage, reasonCode, null );
 
-
         [UsedImplicitly]
         public static Result<TEntity> From( Result other )
         {
@@ -116,15 +113,46 @@ namespace Verve.Utility.Core.ContractResult
             return new Result<TEntity>( other.Succeeded, other.ReasonCode, other.ErrorMessage, other.DetailErrorMessage, otherContent );
         }
 
-        private TEntity? _tEntity;
+        [UsedImplicitly]
+        public static Result<TEntity> FailedFromOtherFailed( Result other )
+        {
+            if ( other == null )
+            {
+                return new Result<TEntity>( false, ReasonCode.UnknownError, "An error occurred.", "Other result was null." );
+            }
+            return new Result<TEntity>( other.Succeeded, other.ReasonCode, other.ErrorMessage, other.DetailErrorMessage, default! );
+        }
+
+        private TEntity _entity;
 
         /// <summary>
         /// Gets or sets content of the result.
         /// </summary>
         public TEntity Entity
         {
-            get => _tEntity ??= new TEntity();
-            protected set => _tEntity = value;
+            get
+            {
+                if ( typeof( TEntity ).IsValueType )
+                {
+                    return _entity;
+                }
+
+                return _entity ?? TryCreate()!;
+            }
+
+
+            protected set => _entity = value;
+        }
+
+        private TEntity TryCreate( TEntity entity = default! )
+        {
+            var type = typeof(TEntity);
+            if ( @type.IsClass && !@type.IsAbstract && @type.GetConstructor( Type.EmptyTypes ) != null )
+            {
+                return ( TEntity )@type.GetConstructor( Type.EmptyTypes )!.Invoke( Type.EmptyTypes );
+            }
+
+            return entity;
         }
     }
 }
