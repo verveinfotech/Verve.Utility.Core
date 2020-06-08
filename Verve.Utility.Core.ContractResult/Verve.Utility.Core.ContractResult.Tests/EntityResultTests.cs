@@ -15,7 +15,6 @@ namespace Verve.Utility.Core.ContractResult.Tests
             Assert.Null( result.Entity.LastName );
             Assert.Equal( Guid.Empty, result.Entity.Id );
             Assert.Null( result.Entity.DateOfBirth );
-
         }
 
         [Fact]
@@ -31,17 +30,40 @@ namespace Verve.Utility.Core.ContractResult.Tests
             Assert.Null( result.Entity.DateOfBirth );
         }
 
-        public class TestPerson
+        [Fact]
+        public void ReturnValueTypeResultWithDefaultContentFromOtherFailure()
         {
-            public Guid Id { get; set; }
 
-            public string FirstName { get; set; } = string.Empty;
+            var result = new Result<TestPerson>(false, ReasonCode.BadRequest, "Bad Request", "Test Failure", default!);
 
-            [MaybeNull]
-            public string? LastName { get; set; }
+            var failedResult = Result<int>.FailedFromOtherFailed(result);
 
-            [MaybeNull]
-            public DateTime? DateOfBirth { get; set; }
+            Assert.NotNull( failedResult );
+
+            Assert.Equal( default, failedResult.Entity );
         }
+
+        [Fact]
+        public void ReturnNotNullContentForRefType()
+        {
+            var result = Result<string>.Failure("Test error", "test detail error", ReasonCode.BadRequest);
+
+            var objectResult = Result<TestPerson>.FailedFromOtherFailed(result);
+
+            Assert.NotNull( objectResult );
+        }
+    }
+
+    public class TestPerson
+    {
+        public Guid Id { get; set; }
+
+        public string FirstName { get; set; } = string.Empty;
+
+        [MaybeNull]
+        public string? LastName { get; set; }
+
+        [MaybeNull]
+        public DateTime? DateOfBirth { get; set; }
     }
 }
