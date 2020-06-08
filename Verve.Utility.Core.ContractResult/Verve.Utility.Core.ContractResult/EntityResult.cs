@@ -123,6 +123,17 @@ namespace Verve.Utility.Core.ContractResult
             return new Result<TEntity>( other.Succeeded, other.ReasonCode, other.ErrorMessage, other.DetailErrorMessage, default! );
         }
 
+        [UsedImplicitly]
+        public static Result<TEntity> FailedIfOtherFailed( Result other, Func<Result<TEntity>> func )
+        {
+            if (other.Failed)
+            {
+                return FailedFromOtherFailed(other);
+            }
+
+            return func.Invoke();
+        }
+
         private TEntity _entity;
 
         /// <summary>
