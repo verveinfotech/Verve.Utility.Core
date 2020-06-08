@@ -125,7 +125,7 @@ namespace Verve.Utility.Core.ContractResult
         }
 
         [UsedImplicitly]
-        public async Task<Result<TEntity>> FailedIfOtherFailed( Result other, Func<Task<Result<TEntity>>> func )
+        public static async Task<Result<TEntity>> FailedIfOtherFailed( Result other, Func<Task<Result<TEntity>>> func )
         {
             if (other.Failed)
             {
