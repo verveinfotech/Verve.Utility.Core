@@ -55,18 +55,62 @@ namespace Verve.Utility.Core.ContractResult.Tests
         }
 
         [Fact]
+        public void ShouldReturnFailedErrorWhenOtherResultIsNull()
+        {
+            var result = Result<TestPerson>.From(null);
+
+            Assert.NotNull( result );
+            Assert.True( result.Failed );
+        }
+
+        [Fact]
+        public void ShouldReturnFailedErrorWhenOtherResultIsFailed()
+        {
+            var result = Result<TestPerson>.From(Result.Failure("Some Error"));
+
+            Assert.NotNull( result );
+            Assert.True( result.Failed );
+        }
+
+        [Fact]
+        public void ShouldReturnSuccessfulWhenOtherResultIsSuccessful()
+        {
+            var result = Result<TestPerson>.From(Result<TestPerson>.Success(CreatePerson()));
+
+            Assert.NotNull( result );
+            Assert.True( result.Succeeded );
+            Assert.NotNull(result.Entity);
+            Assert.Equal("Test", result.Entity.FirstName);
+        }
+
+        [Fact]
+        public void ShouldReturnSuccessfulForSubClassWhenOtherResultIsSuccessful()
+        {
+            var result = Result<TestPerson>.From(Result<Manager>.Success(new Manager
+            {
+                FirstName = "Manager",
+                LastName = "Test"
+            }));
+
+            Assert.NotNull( result );
+            Assert.True( result.Succeeded );
+            Assert.NotNull( result.Entity );
+            Assert.Equal( "Manager", result.Entity.FirstName );
+        }
+
+        [Fact]
         public async Task ShouldReturnFailedIfFirstResultIsFailure()
         {
             var result = Result<string>.Failure("Test error", "test detail error", ReasonCode.BadRequest);
 
-           var newResult = await  Result<TestPerson>.CheckResultAndExecuteNextAsync(result, async () => await GetResult());
+            var newResult = await  Result<TestPerson>.CheckResultAndExecuteNextAsync(result, async () => await GetResult());
 
-           Assert.True(newResult.Failed);
-           Assert.Equal( "Test error" , newResult.ErrorMessage);
+            Assert.True( newResult.Failed );
+            Assert.Equal( "Test error", newResult.ErrorMessage );
         }
-
+                         
         [Fact]
-        public async Task ShouldReturnSuccessfulIfResultandAllNextSuccessful()
+        public async Task ShouldReturnSuccessfulIfResultAndAllNextSuccessful()
         {
             var result = Result<string>.Success("Success");
 
@@ -79,11 +123,20 @@ namespace Verve.Utility.Core.ContractResult.Tests
         private async Task<Result<TestPerson>> GetResult()
         {
             return await Task.FromResult( Result<TestPerson>
-                .Success(new TestPerson
+                .Success( new TestPerson
                 {
                     FirstName = "Test",
                     LastName = "Person",
-                }));
+                } ) );
+        }
+
+        private TestPerson CreatePerson()
+        {
+            return new TestPerson
+            {
+                FirstName = "Test",
+                LastName = "Person"
+            };
         }
     }
 
@@ -98,5 +151,10 @@ namespace Verve.Utility.Core.ContractResult.Tests
 
         [MaybeNull]
         public DateTime? DateOfBirth { get; set; }
+    }
+
+    public class Manager : TestPerson
+    {
+        public Guid ParentId { get; set; }
     }
 }
