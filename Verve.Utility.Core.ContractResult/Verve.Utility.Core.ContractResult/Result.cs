@@ -32,7 +32,7 @@ namespace Verve.Utility.Core.ContractResult
 
         public bool Failed => !Succeeded;
 
-        public static Result Success => new Result { Succeeded = true, ReasonCode = ReasonCode.Success};
+        public static Result Success() => new Result { Succeeded = true, ReasonCode = ReasonCode.Success};
 
         public static Result Failure(Exception exception)
             => Failure(exception.Message, exception.StackTrace?? exception.Message, ReasonCode.InternalServerError);

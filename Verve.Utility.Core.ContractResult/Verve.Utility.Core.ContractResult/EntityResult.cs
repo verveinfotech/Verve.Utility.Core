@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Verve.Utility.Core.ContractResult
 {
@@ -88,7 +89,7 @@ namespace Verve.Utility.Core.ContractResult
             => Failure( errorMessage, reasonCode, null );
 
         [UsedImplicitly]
-        public static Result<TEntity> From( Result other )
+        public static Result<TEntity> From( [AllowNull] Result? other )
         {
             if ( other == null )
             {
@@ -100,7 +101,8 @@ namespace Verve.Utility.Core.ContractResult
 
             if ( other.Succeeded )
             {
-                if ( typeOfOther.IsGenericType && typeOfOther.GenericTypeArguments[0].IsSubclassOf( typeof( TEntity ) ) )
+                if ( typeOfOther.IsGenericType && ( typeOfOther.GenericTypeArguments[0].IsSubclassOf( typeof( TEntity ) ) 
+                                                    || typeOfOther.GenericTypeArguments[0] == typeof(TEntity)) )
                 {
                     var property = typeOfOther.GetProperty(nameof(Entity));
                     otherContent = ( TEntity )property?.GetValue( other )!;
@@ -127,9 +129,21 @@ namespace Verve.Utility.Core.ContractResult
         [UsedImplicitly]
         public static async Task<Result<TEntity>> CheckResultAndExecuteNextAsync( Result other, Func<Task<Result<TEntity>>> next )
         {
-            if (other.Failed)
+            if ( other.Failed )
             {
-                return FailedFromOtherFailed(other);
+                return FailedFromOtherFailed( other );
+            }
+
+            return await next.Invoke();
+        }
+
+        [UsedImplicitly]
+        public static async Task<Result<TEntity>> CheckResultAndExecuteNextAsync( Result other, ILogger logger, Func<Task<Result<TEntity>>> next )
+        {
+            if ( other.Failed )
+            {
+                logger.LogWarning( other.Exception, "Result failed, '{ErrorMessage}', '{DetailsError}', '{ResonCode}'", other.ErrorMessage, other.DetailErrorMessage, other.ReasonCode );
+                return FailedFromOtherFailed( other );
             }
 
             return await next.Invoke();
