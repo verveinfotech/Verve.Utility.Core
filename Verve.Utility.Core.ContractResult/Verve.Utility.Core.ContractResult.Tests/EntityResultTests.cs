@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Verve.Utility.Core.ContractResult.Tests
@@ -51,6 +52,38 @@ namespace Verve.Utility.Core.ContractResult.Tests
             var objectResult = Result<TestPerson>.FailedFromOtherFailed(result);
 
             Assert.NotNull( objectResult );
+        }
+
+        [Fact]
+        public async Task ShouldReturnFailedIfFirstResultIsFailure()
+        {
+            var result = Result<string>.Failure("Test error", "test detail error", ReasonCode.BadRequest);
+
+           var newResult = await  Result<TestPerson>.CheckResultAndExecuteNextAsync(result, async () => await GetResult());
+
+           Assert.True(newResult.Failed);
+           Assert.Equal( "Test error" , newResult.ErrorMessage);
+        }
+
+        [Fact]
+        public async Task ShouldReturnSuccessfulIfResultandAllNextSuccessful()
+        {
+            var result = Result<string>.Success("Success");
+
+            var newResult = await  Result<TestPerson>.CheckResultAndExecuteNextAsync(result, async () => await GetResult());
+
+            Assert.True( newResult.Succeeded );
+            Assert.Equal( ReasonCode.Success, newResult.ReasonCode );
+        }
+
+        private async Task<Result<TestPerson>> GetResult()
+        {
+            return await Task.FromResult( Result<TestPerson>
+                .Success(new TestPerson
+                {
+                    FirstName = "Test",
+                    LastName = "Person",
+                }));
         }
     }
 
