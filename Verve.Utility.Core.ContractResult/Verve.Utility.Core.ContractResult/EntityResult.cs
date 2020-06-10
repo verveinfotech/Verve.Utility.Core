@@ -142,7 +142,7 @@ namespace Verve.Utility.Core.ContractResult
         {
             if ( other.Failed )
             {
-                logger.LogWarning( other.Exception, "Result failed, '{ErrorMessage}', '{DetailsError}', '{ResonCode}'", other.ErrorMessage, other.DetailErrorMessage, other.ReasonCode );
+                logger.LogWarning( other.Exception, "Result failed, '{ErrorMessage}', '{DetailsError}', '{ReasonCode}'", other.ErrorMessage, other.DetailErrorMessage, other.ReasonCode );
                 return FailedFromOtherFailed( other );
             }
 
