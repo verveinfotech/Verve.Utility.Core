@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 
 namespace Verve.Utility.Core.ContractResult
 {
@@ -70,6 +71,18 @@ namespace Verve.Utility.Core.ContractResult
         {
             if ( other.Failed )
             {
+                return other;
+            }
+
+            return await next.Invoke();
+        }
+
+        [UsedImplicitly]
+        public static async Task<Result> CheckResultAndExecuteNextAsync( Result other, ILogger logger, Func<Task<Result>> next )
+        {
+            if ( other.Failed )
+            {
+                logger.LogWarning( other.Exception, "Result failed, '{ErrorMessage}', '{DetailsError}', '{ReasonCode}'", other.ErrorMessage, other.DetailErrorMessage, other.ReasonCode );
                 return other;
             }
 
