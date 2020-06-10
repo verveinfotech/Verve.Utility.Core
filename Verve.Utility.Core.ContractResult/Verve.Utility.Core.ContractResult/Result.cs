@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace Verve.Utility.Core.ContractResult
 {
@@ -9,7 +11,7 @@ namespace Verve.Utility.Core.ContractResult
 
         }
 
-        public Result(bool success, ReasonCode reason, string? userFriendlyMessage, string? developerFriendlyMessage)
+        public Result( bool success, ReasonCode reason, string? userFriendlyMessage, string? developerFriendlyMessage )
         {
             Succeeded = success;
             ReasonCode = reason;
@@ -17,7 +19,7 @@ namespace Verve.Utility.Core.ContractResult
             DetailErrorMessage = developerFriendlyMessage;
         }
 
-        public Result(string errorMessage, ReasonCode reasonCode)
+        public Result( string errorMessage, ReasonCode reasonCode )
         {
             ErrorMessage = errorMessage;
             Succeeded = false;
@@ -26,28 +28,28 @@ namespace Verve.Utility.Core.ContractResult
 
         public bool Succeeded { get; protected set; }
         public string? ErrorMessage { get; protected set; }
-        public  string? DetailErrorMessage { get; protected set; }
+        public string? DetailErrorMessage { get; protected set; }
         public ReasonCode ReasonCode { get; set; }
         public Exception? Exception { get; protected set; }
 
         public bool Failed => !Succeeded;
 
-        public static Result Success() => new Result { Succeeded = true, ReasonCode = ReasonCode.Success};
+        public static Result Success() => new Result { Succeeded = true, ReasonCode = ReasonCode.Success };
 
-        public static Result Failure(Exception exception)
-            => Failure(exception.Message, exception.StackTrace?? exception.Message, ReasonCode.InternalServerError);
+        public static Result Failure( Exception exception )
+            => Failure( exception.Message, exception.StackTrace ?? exception.Message, ReasonCode.InternalServerError );
 
-        public static Result Failure(string errorMessage) 
-            =>  Failure(errorMessage, ReasonCode.UnknownError, null);
+        public static Result Failure( string errorMessage )
+            => Failure( errorMessage, ReasonCode.UnknownError, null );
 
-        public static Result Failure(string errorMessage, ReasonCode reasonCode)
-            => Failure(errorMessage, reasonCode, null);
-        
+        public static Result Failure( string errorMessage, ReasonCode reasonCode )
+            => Failure( errorMessage, reasonCode, null );
 
-        public static Result Failure(string errorMessage, ReasonCode reasonCode, Exception? exception)
-            => Failure(errorMessage, errorMessage, reasonCode, exception);
-        
-        public static Result Failure(string errorMessage, string detailErrorMessage, ReasonCode reasonCode, Exception? exception)
+
+        public static Result Failure( string errorMessage, ReasonCode reasonCode, Exception? exception )
+            => Failure( errorMessage, errorMessage, reasonCode, exception );
+
+        public static Result Failure( string errorMessage, string detailErrorMessage, ReasonCode reasonCode, Exception? exception )
         {
             return new Result
             {
@@ -57,10 +59,21 @@ namespace Verve.Utility.Core.ContractResult
                 DetailErrorMessage = detailErrorMessage
             };
         }
-        
-        public static Result Failure(string errorMessage, string detailError, ReasonCode reasonCode)
+
+        public static Result Failure( string errorMessage, string detailError, ReasonCode reasonCode )
         {
-            return Failure(errorMessage, reasonCode, null);
+            return Failure( errorMessage, reasonCode, null );
+        }
+
+        [UsedImplicitly]
+        public static async Task<Result> CheckResultAndExecuteNextAsync( Result other, Func<Task<Result>> next )
+        {
+            if ( other.Failed )
+            {
+                return other;
+            }
+
+            return await next.Invoke();
         }
     }
 }
