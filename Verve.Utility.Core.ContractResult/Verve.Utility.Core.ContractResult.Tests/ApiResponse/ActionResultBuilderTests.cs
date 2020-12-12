@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Verve.Utility.Core.ContractResult.ApiResponse;
+
 using Xunit;
 
 namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
@@ -21,20 +25,50 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
         func)! as OkObjectResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( 200, result!.StatusCode! );
+            Assert.Equal(200, result!.StatusCode!);
         }
 
+        private Task<Result<IList<TestPerson>>> GetSuccessfulListOfEntityResult()
+           => Task.FromResult(Result<IList<TestPerson>>.Success(new List<TestPerson> { new TestPerson {
+                    FirstName = "Test",
+                    LastName = "Person"
+                }
+           }));
+
+
+        [Fact]
+        public async Task ShouldReturnSuccessIfFunctionReturnsSuccessfulListEntityResult()
+        {
+            // Arrange
+
+            Func<Task<Result<IList<TestPerson>>>> func = GetSuccessfulListOfEntityResult;
+
+            // Act
+            var result = await ActionResultBuilder.ExecuteAndBuildResult(
+        func)! as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+
+            Assert.True(result!.StatusCode.HasValue);
+
+            Assert.Equal(200, result!.StatusCode!);
+        }
+
+
+
         private Task<Result<TestPerson>> GetSuccessfulEntityResult()
-            => Task.FromResult( Result<TestPerson>.Success( new TestPerson
+            => Task.FromResult(Result<TestPerson>.Success(new TestPerson
             {
                 FirstName = "Test",
                 LastName = "Person"
-            } ) );
+            }));
 
+       
 
         [Fact]
         public async Task ShouldReturnBadRequestIfFunctionReturnsBadRequestEntityResult()
@@ -47,15 +81,15 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
         func) as ContentResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( HttpStatusCode.BadRequest, ( HttpStatusCode )( result.StatusCode! ) );
+            Assert.Equal(HttpStatusCode.BadRequest, (HttpStatusCode)(result.StatusCode!));
         }
 
         private Task<Result<TestPerson>> GetBadRequestEntityResult()
-            => Task.FromResult( Result<TestPerson>.Failure( "Failed", "Bad Request", ReasonCode.BadRequest ) );
+            => Task.FromResult(Result<TestPerson>.Failure("Failed", "Bad Request", ReasonCode.BadRequest));
 
 
         [Fact]
@@ -69,33 +103,33 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
                 func)! as ContentResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( HttpStatusCode.InternalServerError, ( HttpStatusCode )( result.StatusCode! ) );
+            Assert.Equal(HttpStatusCode.InternalServerError, (HttpStatusCode)(result.StatusCode!));
         }
 
         private Task<Result<TestPerson>> GetInternalServerErrorEntityResult()
-            => Task.FromResult( Result<TestPerson>.Failure( "Failed", "Internal Server Error", ReasonCode.InternalServerError ) );
+            => Task.FromResult(Result<TestPerson>.Failure("Failed", "Internal Server Error", ReasonCode.InternalServerError));
 
         [Fact]
         public async Task ShouldReturnContentResultWithInternalServerErrorCode_WhenFunctionReturnsDbErrorEntityResult()
         {
             // Arrange
 
-            Task<Result<TestPerson>> Func() => Task.FromResult( Result<TestPerson>.Failure( "Error", ReasonCode.UniqueConstrainError ) );
+            Task<Result<TestPerson>> Func() => Task.FromResult(Result<TestPerson>.Failure("Error", ReasonCode.UniqueConstrainError));
 
             // Act
             var result = await ActionResultBuilder.ExecuteAndBuildResult(
                 Func)! as ContentResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( 500, result!.StatusCode! );
+            Assert.Equal(500, result!.StatusCode!);
         }
 
         [Fact]
@@ -103,18 +137,18 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
         {
             // Arrange
 
-            Task<Result<TestPerson>> Func() => Task.FromResult( Result<TestPerson>.Failure( "Error", ReasonCode.UnknownError ) );
+            Task<Result<TestPerson>> Func() => Task.FromResult(Result<TestPerson>.Failure("Error", ReasonCode.UnknownError));
 
             // Act
             var result = await ActionResultBuilder.ExecuteAndBuildResult(
                 Func)! as ContentResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( 500, result!.StatusCode! );
+            Assert.Equal(500, result!.StatusCode!);
         }
 
         [Fact]
@@ -129,11 +163,11 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
                 Func)! as OkObjectResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( 200, result!.StatusCode! );
+            Assert.Equal(200, result!.StatusCode!);
         }
 
 
@@ -142,18 +176,18 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
         {
             // Arrange
 
-            Task<Result> Func() => Task.FromResult( Result.Failure("Error", ReasonCode.BadRequest) );
+            Task<Result> Func() => Task.FromResult(Result.Failure("Error", ReasonCode.BadRequest));
 
             // Act
             var result = await ActionResultBuilder.ExecuteAndBuildResult(
                 Func)! as ContentResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( 400, result!.StatusCode! );
+            Assert.Equal(400, result!.StatusCode!);
         }
 
         [Fact]
@@ -161,18 +195,18 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
         {
             // Arrange
 
-            Task<Result> Func() => Task.FromResult( Result.Failure( "Error", ReasonCode.InternalServerError ) );
+            Task<Result> Func() => Task.FromResult(Result.Failure("Error", ReasonCode.InternalServerError));
 
             // Act
             var result = await ActionResultBuilder.ExecuteAndBuildResult(
                 Func)! as ContentResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( 500, result!.StatusCode! );
+            Assert.Equal(500, result!.StatusCode!);
         }
 
         [Fact]
@@ -180,18 +214,18 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
         {
             // Arrange
 
-            Task<Result> Func() => Task.FromResult( Result.Failure( "Error", ReasonCode.UniqueConstrainError ) );
+            Task<Result> Func() => Task.FromResult(Result.Failure("Error", ReasonCode.UniqueConstrainError));
 
             // Act
             var result = await ActionResultBuilder.ExecuteAndBuildResult(
                 Func)! as ContentResult;
 
             // Assert
-            Assert.NotNull( result );
+            Assert.NotNull(result);
 
-            Assert.True( result!.StatusCode.HasValue );
+            Assert.True(result!.StatusCode.HasValue);
 
-            Assert.Equal( 500, result!.StatusCode! );
+            Assert.Equal(500, result!.StatusCode!);
         }
 
     }
