@@ -21,8 +21,6 @@ namespace Verve.Utility.Core.ContractResult.ApiResponse
         /// <param name="func">Function to be executed</param>
         /// <returns>Returns OK result of <typeparamref name="TContent"/> if successful, otherwise appropriate status code and error message</returns>
         public static async Task<IActionResult> ExecuteAndBuildResult<TContent>(Func<Task<Result<TContent>>> func)
-            where TContent : class, new()
-
         {
             var result = await func.Invoke();
             return result.Succeeded ? new OkObjectResult(result.Entity) : result.ToJsonContentResult();
