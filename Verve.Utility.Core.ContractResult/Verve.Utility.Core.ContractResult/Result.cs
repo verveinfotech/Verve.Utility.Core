@@ -88,5 +88,10 @@ namespace Verve.Utility.Core.ContractResult
 
             return await next.Invoke();
         }
+
+        public static Result FromOtherResult(Result result)
+        {
+            return Failure(result.ErrorMessage?? "An error occurred", result.DetailErrorMessage ?? "Unknown Error occurred", result.ReasonCode, result.Exception);
+        }
     }
 }

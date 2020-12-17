@@ -32,12 +32,13 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
             Assert.Equal(200, result!.StatusCode!);
         }
 
-        private Task<Result<IList<TestPerson>>> GetSuccessfulListOfEntityResult()
-           => Task.FromResult(Result<IList<TestPerson>>.Success(new List<TestPerson> { new TestPerson {
-                    FirstName = "Test",
-                    LastName = "Person"
-                }
-           }));
+        private Task<Result<TestPerson>> GetSuccessfulEntityResult()
+            => Task.FromResult(Result<TestPerson>.Success(new TestPerson
+            {
+                FirstName = "Test",
+                LastName = "Person"
+            }));
+              
 
 
         [Fact]
@@ -54,21 +55,21 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
             // Assert
             Assert.NotNull(result);
 
+            var persons = result!.Value as List<TestPerson>;
+
+            Assert.Single(persons);
+
             Assert.True(result!.StatusCode.HasValue);
 
             Assert.Equal(200, result!.StatusCode!);
         }
 
-
-
-        private Task<Result<TestPerson>> GetSuccessfulEntityResult()
-            => Task.FromResult(Result<TestPerson>.Success(new TestPerson
-            {
-                FirstName = "Test",
-                LastName = "Person"
-            }));
-
-       
+        private Task<Result<IList<TestPerson>>> GetSuccessfulListOfEntityResult()
+          => Task.FromResult(Result<IList<TestPerson>>.Success(new List<TestPerson> { new TestPerson {
+                    FirstName = "Test",
+                    LastName = "Person"
+                }
+          }));
 
         [Fact]
         public async Task ShouldReturnBadRequestIfFunctionReturnsBadRequestEntityResult()
@@ -228,5 +229,34 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
             Assert.Equal(500, result!.StatusCode!);
         }
 
+        [Fact]
+        public async Task ShouldReturnContentResultWithNotFoundErrorCode_WhenFunctionReturnsNotFoundResult()
+        {
+            // Arrange
+
+            Task<Result<TestPerson>> Func() => Task.FromResult(Result<TestPerson>.Failure("Error", ReasonCode.NotFound));
+
+            // Act
+            var result = await ActionResultBuilder.ExecuteAndBuildResult(
+                Func)! as ContentResult;
+
+            // Assert
+            Assert.NotNull(result);
+
+            Assert.True(result!.StatusCode.HasValue);
+
+            Assert.Equal(404, result!.StatusCode!);
+        }
+
+        [Fact]
+        public async Task ShouldReturnNotFoundWithError()
+        {
+            Task<Result<TestPerson>> Func() => Task.FromResult(new Result<TestPerson>(false, ReasonCode.NoContent, "Not Found", "Does not exist"));
+            var result = await ActionResultBuilder.ExecuteAndBuildResult(Func) as NoContentResult;
+
+            Assert.NotNull(result);
+
+            Assert.Equal(204, result!.StatusCode!);
+        }
     }
 }
