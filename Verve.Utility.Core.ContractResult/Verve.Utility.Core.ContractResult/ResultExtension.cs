@@ -16,23 +16,6 @@ namespace Verve.Utility.Core.ContractResult
         {
             var statusCode = GetStatusCode(result);
 
-            return statusCode == StatusCodes.Status204NoContent ? new NoContentResult() : CheckErrorAndCreateContentResult(result, statusCode);
-        }
-
-        private static IActionResult CheckErrorAndCreateContentResult(Result result, int statusCode)
-        {
-            return (statusCode > 299) ? CreateErrorResult(result, statusCode) : CreateContentResult(result, statusCode);
-        }
-
-        private static IActionResult CreateErrorResult(Result result, int statusCode)
-        {
-            var errorResult = Result.FromOtherResult(result);
-
-            return CreateContentResult(errorResult, statusCode);
-        }
-
-        private static IActionResult CreateContentResult(Result result, int statusCode)
-        {
             return new ContentResult
             {
                 Content = JsonConvert.SerializeObject(result, new JsonSerializerSettings
@@ -43,7 +26,7 @@ namespace Verve.Utility.Core.ContractResult
                 StatusCode = statusCode
             };
         }
-
+            
         private static int GetStatusCode(Result result)
         {
             if (result.ReasonCode == ReasonCode.UnknownError)
