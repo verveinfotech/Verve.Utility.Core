@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+
 using JetBrains.Annotations;
+
 using Microsoft.Extensions.Logging;
 
 namespace Verve.Utility.Core.ContractResult
@@ -87,6 +89,11 @@ namespace Verve.Utility.Core.ContractResult
 
         public new static Result<TEntity> Failure(string errorMessage, string detailError, ReasonCode reasonCode)
             => Failure(errorMessage, reasonCode, null);
+
+        public static Result<TEntity> NoContent(string message)
+        {
+            return new Result<TEntity>(true,  ReasonCode.NoContent, message, message);
+        }
 
         [UsedImplicitly]
         public static Result<TEntity> From([AllowNull] Result? other)
@@ -193,12 +200,10 @@ namespace Verve.Utility.Core.ContractResult
         private TEntity TryCreate(TEntity entity = default!)
         {
             var type = typeof(TEntity);
-            if (@type.IsClass && !@type.IsAbstract && @type.GetConstructor(Type.EmptyTypes) != null)
-            {
-                return (TEntity)@type.GetConstructor(Type.EmptyTypes)!.Invoke(Type.EmptyTypes);
-            }
 
-            return entity;
+            return @type.IsClass && !@type.IsAbstract && @type.GetConstructor(Type.EmptyTypes) != null
+                ? (TEntity)@type.GetConstructor(Type.EmptyTypes)!.Invoke(Type.EmptyTypes)
+                : entity;
         }
     }
 }

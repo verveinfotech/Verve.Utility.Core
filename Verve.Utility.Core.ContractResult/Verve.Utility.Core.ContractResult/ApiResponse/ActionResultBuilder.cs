@@ -37,6 +37,5 @@ namespace Verve.Utility.Core.ContractResult.ApiResponse
             var result = await func.Invoke();
             return result.Succeeded ? new OkObjectResult(result) : result.ToJsonContentResult();
         }
-
     }
 }
