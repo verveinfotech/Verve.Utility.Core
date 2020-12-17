@@ -61,6 +61,7 @@ namespace Verve.Utility.Core.ContractResult
             ReasonCode = reasonCode;
         }
 
+
         [UsedImplicitly]
         [JetBrains.Annotations.NotNull]
         public new static Result<TEntity> Success(TEntity entity)
@@ -90,10 +91,9 @@ namespace Verve.Utility.Core.ContractResult
         public new static Result<TEntity> Failure(string errorMessage, string detailError, ReasonCode reasonCode)
             => Failure(errorMessage, reasonCode, null);
 
-        public static Result<TEntity> NoContent(string message)
-        {
-            return new Result<TEntity>(true,  ReasonCode.NoContent, message, message);
-        }
+        public static Result<TEntity> NoContent()
+            => new Result<TEntity>(true, ReasonCode.NoContent, null, null);
+
 
         [UsedImplicitly]
         public static Result<TEntity> From([AllowNull] Result? other)

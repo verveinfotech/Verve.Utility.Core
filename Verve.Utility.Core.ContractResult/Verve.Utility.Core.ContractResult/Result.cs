@@ -12,6 +12,11 @@ namespace Verve.Utility.Core.ContractResult
 
         }
 
+        public Result(ReasonCode reasonCode)
+        {
+
+        }
+
         public Result( bool success, ReasonCode reason, string? userFriendlyMessage, string? developerFriendlyMessage )
         {
             Succeeded = success;
