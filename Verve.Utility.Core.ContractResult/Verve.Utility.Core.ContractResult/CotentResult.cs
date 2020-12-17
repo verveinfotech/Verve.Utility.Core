@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 
 namespace Verve.Utility.Core.ContractResult
 {
+    [Obsolete("Use EntitytResult")]
     public class ContentResult<T> : Result
     {
         public static ContentResult<T> Instance { get; } = new ContentResult<T>();
@@ -68,11 +69,8 @@ namespace Verve.Utility.Core.ContractResult
         public ContentResult( bool success, T content, ReasonCode reasonCode )
         {
             Succeeded = success;
-            Content = content;
-            _content = content;
-            _content = content;
-            _content = content;
-            _content = content;
+                        _content = content;
+            
             ReasonCode = reasonCode;
         }
 
