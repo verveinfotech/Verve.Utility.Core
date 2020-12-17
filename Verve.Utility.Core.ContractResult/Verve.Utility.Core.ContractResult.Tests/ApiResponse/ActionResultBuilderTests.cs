@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Mvc;
-
 using Verve.Utility.Core.ContractResult.ApiResponse;
-
 using Xunit;
 
 namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
@@ -38,14 +35,11 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
                 FirstName = "Test",
                 LastName = "Person"
             }));
-              
-
 
         [Fact]
         public async Task ShouldReturnSuccessIfFunctionReturnsSuccessfulListEntityResult()
         {
             // Arrange
-
             Func<Task<Result<IList<TestPerson>>>> func = GetSuccessfulListOfEntityResult;
 
             // Act
@@ -257,6 +251,47 @@ namespace Verve.Utility.Core.ContractResult.Tests.ApiResponse
             Assert.NotNull(result);
 
             Assert.Equal(204, result!.StatusCode!);
+        }
+
+        [Fact]
+        public async Task ShouldReturnNoContentWithSuccess()
+        {
+            Task<Result<TestPerson>> Func() => Task.FromResult(Result<TestPerson>.NoContent());
+            var result = await ActionResultBuilder.ExecuteAndBuildResult(Func) as NoContentResult;
+
+            Assert.NotNull(result);
+
+            Assert.Equal(204, result!.StatusCode!);
+        }
+
+        [Fact]
+        public async Task ShouldReturnAcceptedWithSuccess()
+        {
+            var testPerson = CreatePerson();
+
+            Task<Result<TestPerson>> Func() => Task.FromResult(Result<TestPerson>.Success(testPerson, ReasonCode.Accepted));
+            var result = await ActionResultBuilder.ExecuteAndBuildResult(Func) as AcceptedResult;
+
+            Assert.NotNull(result);
+            Assert.Equal(202, result!.StatusCode!);
+
+            var entity = result!.Value as TestPerson;
+
+            Assert.NotNull(entity);
+            Assert.Equal(testPerson.Id, entity!.Id);
+            Assert.Equal(testPerson.FirstName, entity!.FirstName);
+            Assert.Equal(testPerson.LastName, entity!.LastName);
+        }
+
+        private TestPerson CreatePerson()
+        {
+            return new TestPerson
+            {
+                FirstName = "Test",
+                LastName = "Person",
+                DateOfBirth = new DateTime(1998, 5, 21),
+                Id = Guid.NewGuid()
+            };
         }
     }
 }
