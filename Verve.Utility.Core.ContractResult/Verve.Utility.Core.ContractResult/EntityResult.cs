@@ -54,7 +54,7 @@ namespace Verve.Utility.Core.ContractResult
         {
         }
 
-        public Result(bool success, TEntity entity, ReasonCode reasonCode)
+        public Result(bool success, [CanBeNull][AllowNull] TEntity entity, ReasonCode reasonCode)
         {
             Succeeded = success;
             _entity = entity;
@@ -64,12 +64,12 @@ namespace Verve.Utility.Core.ContractResult
 
         [UsedImplicitly]
         [JetBrains.Annotations.NotNull]
-        public new static Result<TEntity> Success(TEntity entity)
+        public static Result<TEntity> Success(TEntity entity)
             => Success(entity, ReasonCode.Success);
 
         [UsedImplicitly]
         [JetBrains.Annotations.NotNull]
-        public new static Result<TEntity> Success(TEntity entity, ReasonCode reasonCode)
+        public static Result<TEntity> Success(TEntity entity, ReasonCode reasonCode)
             => new Result<TEntity>(true, entity, reasonCode);
 
         public new static Result<TEntity> Failure(Exception exception)
