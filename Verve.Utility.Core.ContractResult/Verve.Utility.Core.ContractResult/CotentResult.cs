@@ -76,12 +76,12 @@ namespace Verve.Utility.Core.ContractResult
 
         [JetBrains.Annotations.UsedImplicitly]
         [JetBrains.Annotations.NotNull]
-        public new static ContentResult<T> Success( T entity )
+        public static ContentResult<T> Success( T entity )
             => Success( entity, ReasonCode.Success );
 
         [JetBrains.Annotations.UsedImplicitly]
         [JetBrains.Annotations.NotNull]
-        public new static ContentResult<T> Success( T content, ReasonCode reasonCode )
+        public static ContentResult<T> Success( T content, ReasonCode reasonCode )
             => new ContentResult<T>( true, content, reasonCode );
 
         public new static ContentResult<T> Failure( Exception exception )
