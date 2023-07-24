@@ -30,7 +30,7 @@ namespace Verve.Utility.Core.ContractResult
         /// <param name="content"></param>
         [JetBrains.Annotations.UsedImplicitly]
         public ContentResult( bool success, ReasonCode reason, string? userFriendlyMessage, string? developerFriendlyMessage,
-            [NotNull] T content = default! )
+             T content = default! )
             : base( success, reason, userFriendlyMessage, developerFriendlyMessage )
         {
             if ( success && content == null && reason != ReasonCode.NoContent )

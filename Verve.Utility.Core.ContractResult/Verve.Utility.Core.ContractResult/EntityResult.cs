@@ -54,7 +54,7 @@ namespace Verve.Utility.Core.ContractResult
         {
         }
 
-        public Result(bool success, [CanBeNull][AllowNull] TEntity entity, ReasonCode reasonCode)
+        public Result(bool success,  TEntity entity, ReasonCode reasonCode)
         {
             Succeeded = success;
             _entity = entity;
