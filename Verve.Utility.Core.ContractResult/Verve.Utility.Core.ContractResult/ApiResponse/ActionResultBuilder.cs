@@ -1,13 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System;
+using System.Threading.Tasks;
 
 namespace Verve.Utility.Core.ContractResult.ApiResponse
 {
@@ -50,6 +46,18 @@ namespace Verve.Utility.Core.ContractResult.ApiResponse
         {
             var result = await func.Invoke();
             return result.Succeeded ? new OkObjectResult(result) : result.ToJsonContentResult();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="jsonResultConverter"></param>
+        /// <returns></returns>
+        public static async Task<IActionResult> ExecuteAndBuildResult(Func<Task<Result>> func, Func<Result, Task<IActionResult>> errorResultConverter)
+        {
+            var result = await func.Invoke();
+            return result.Succeeded ? new OkObjectResult(result) : await errorResultConverter.Invoke(result);
         }
     }
 }
