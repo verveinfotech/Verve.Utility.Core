@@ -6,7 +6,7 @@
     <LangVersion>latest</LangVersion>
     <Authors>Verve Infotech, Aziz Kapadia</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.0.1</Version>
+    <Version>6.0.0.1</Version>
     <IsPackable>true</IsPackable>
     <RepositoryType>Public</RepositoryType>
     <PackageTags>ContractResult</PackageTags>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
   </ItemGroup>
