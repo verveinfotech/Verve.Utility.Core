@@ -57,7 +57,7 @@ namespace Verve.Utility.Core.ContractResult
         public Result(bool success, [CanBeNull][AllowNull] TEntity entity, ReasonCode reasonCode)
         {
             Succeeded = success;
-            _entity = entity;
+            _entity = entity ?? throw new ArgumentNullException(nameof(entity));
             ReasonCode = reasonCode;
         }
 
